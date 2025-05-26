@@ -67,7 +67,9 @@ function draw() {
     const hand = handPredictions[0];
     gesture = detectGesture(hand);
 
-    // 根據手勢改變圓圈顏色
+    // 偵錯用
+    // console.log('偵測到手勢:', gesture);
+
     if (gesture === 'rock') {
       stroke(0, 255, 0); // 綠色
     } else if (gesture === 'paper') {
@@ -81,25 +83,22 @@ function draw() {
     noFill();
   }
 
-  if (predictions.length > 0) {
+  if (predictions.length > 0 && predictions[0].scaledMesh) {
     const keypoints = predictions[0].scaledMesh;
     let circleX, circleY;
 
-    // 根據手勢決定圓圈位置
-    if (gesture === 'scissors') {
-      // 額頭（點10）
+    if (gesture === 'scissors' && keypoints[10]) {
       [circleX, circleY] = keypoints[10];
-    } else if (gesture === 'rock') {
-      // 左臉頰（點234）
+    } else if (gesture === 'rock' && keypoints[234]) {
       [circleX, circleY] = keypoints[234];
-    } else if (gesture === 'paper') {
-      // 右臉頰（點454）
+    } else if (gesture === 'paper' && keypoints[454]) {
       [circleX, circleY] = keypoints[454];
-    } else {
-      // 預設鼻尖（點1）
+    } else if (keypoints[1]) {
       [circleX, circleY] = keypoints[1];
     }
 
-    ellipse(circleX, circleY, 50, 50);
+    if (circleX !== undefined && circleY !== undefined) {
+      ellipse(circleX, circleY, 50, 50);
+    }
   }
 }
