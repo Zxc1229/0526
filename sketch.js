@@ -62,20 +62,10 @@ function detectGesture(hand) {
 function draw() {
   image(video, 0, 0, width, height);
 
-  if (predictions.length > 0) {
-    const keypoints = predictions[0].scaledMesh;
-
-    // 在鼻尖（第1點）畫一個50x50的圓圈
-    const [x, y] = keypoints[1];
-    noFill();
-    stroke(255, 0, 0);
-    strokeWeight(4);
-    ellipse(x, y, 50, 50);
-  }
-
+  let gesture = null;
   if (handPredictions.length > 0) {
     const hand = handPredictions[0];
-    const gesture = detectGesture(hand);
+    gesture = detectGesture(hand);
 
     // 根據手勢改變圓圈顏色
     if (gesture === 'rock') {
@@ -87,11 +77,29 @@ function draw() {
     } else {
       stroke(255, 0, 0); // 預設為紅色
     }
-
-    // 畫出手勢圓圈
-    const [x, y] = hand.landmarks[0];
-    noFill();
     strokeWeight(4);
-    ellipse(x, y, 50, 50);
+    noFill();
+  }
+
+  if (predictions.length > 0) {
+    const keypoints = predictions[0].scaledMesh;
+    let circleX, circleY;
+
+    // 根據手勢決定圓圈位置
+    if (gesture === 'scissors') {
+      // 額頭（點10）
+      [circleX, circleY] = keypoints[10];
+    } else if (gesture === 'rock') {
+      // 左臉頰（點234）
+      [circleX, circleY] = keypoints[234];
+    } else if (gesture === 'paper') {
+      // 右臉頰（點454）
+      [circleX, circleY] = keypoints[454];
+    } else {
+      // 預設鼻尖（點1）
+      [circleX, circleY] = keypoints[1];
+    }
+
+    ellipse(circleX, circleY, 50, 50);
   }
 }
